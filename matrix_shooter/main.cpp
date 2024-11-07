@@ -3,7 +3,7 @@
 #define LOG(argument) std::cout << argument << '\n'
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
-#define PLATFORM_COUNT 10
+#define SMITH_COUNT 3
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
@@ -26,12 +26,12 @@
 struct GameState
 {
     Entity* player;
-    Entity* platforms;
+    Entity* smiths;
 };
 
 // ––––– CONSTANTS ––––– //
-constexpr int WINDOW_WIDTH = 640,
-WINDOW_HEIGHT = 480;
+constexpr int WINDOW_WIDTH = 640 * 1.7,
+WINDOW_HEIGHT = 480 * 1.7;
 
 constexpr float BG_RED = 0.1922f,
 BG_BLUE = 0.549f,
@@ -47,8 +47,8 @@ constexpr char V_SHADER_PATH[] = "shaders/vertex_textured.glsl",
 F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
 
 constexpr float MILLISECONDS_IN_SECOND = 1000.0;
-constexpr char SPRITESHEET_FILEPATH[] = "assets/george_0.png";
-constexpr char PLATFORM_FILEPATH[] = "assets/platformPack_tile027.png";
+constexpr char SPRITESHEET_FILEPATH[] = "assets/neo.png";
+constexpr char SMITH_FILEPATH[] = "assets/smith.png";
 
 constexpr int NUMBER_OF_TEXTURES = 1;
 constexpr GLint LEVEL_OF_DETAIL = 0;
@@ -113,7 +113,7 @@ GLuint load_texture(const char* filepath)
 void initialise()
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    g_display_window = SDL_CreateWindow("Hello, Physics (again)!",
+    g_display_window = SDL_CreateWindow("matrix shooter",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         WINDOW_WIDTH, WINDOW_HEIGHT,
         SDL_WINDOW_OPENGL);
@@ -158,20 +158,20 @@ void initialise()
     // ––––– SFX ––––– //
     g_jump_sfx = Mix_LoadWAV(SFX_FILEPATH);
 
-    // ––––– PLATFORMS ––––– //
-    GLuint platform_texture_id = load_texture(PLATFORM_FILEPATH);
+    // ––––– SMITHS ––––– //
+    GLuint smith_texture_id = load_texture(SMITH_FILEPATH);
 
-    g_state.platforms = new Entity[PLATFORM_COUNT];
+    g_state.smiths = new Entity[SMITH_COUNT];
 
-    // Set the type of every platform entity to PLATFORM
-    for (int i = 0; i < PLATFORM_COUNT; i++)
+    // Set the type of every SMITH entity to SMITH
+    for (int i = 0; i < SMITH_COUNT; i++)
     {
-        g_state.platforms[i].set_texture_id(platform_texture_id);
-        g_state.platforms[i].set_position(glm::vec3(i - PLATFORM_COUNT / 2.0f, -3.0f, 0.0f));
-        g_state.platforms[i].set_width(0.8f);
-        g_state.platforms[i].set_height(1.0f);
-        g_state.platforms[i].set_entity_type(PLATFORM);
-        g_state.platforms[i].update(0.0f, NULL, NULL, 0);
+        g_state.smiths[i].set_texture_id(smith_texture_id);
+        g_state.smiths[i].set_position(glm::vec3(i - SMITH_COUNT / 2.0f, -3.0f, 0.0f));
+        g_state.smiths[i].set_width(0.8f);
+        g_state.smiths[i].set_height(1.0f);
+        g_state.smiths[i].set_entity_type(SMITH);
+        g_state.smiths[i].update(0.0f, NULL, NULL, 0);
     }
 
 
@@ -293,7 +293,7 @@ void update()
 
     while (delta_time >= FIXED_TIMESTEP)
     {
-        g_state.player->update(FIXED_TIMESTEP, NULL, g_state.platforms, PLATFORM_COUNT);
+        g_state.player->update(FIXED_TIMESTEP, NULL, g_state.smiths, SMITH_COUNT);
         delta_time -= FIXED_TIMESTEP;
     }
 
@@ -306,7 +306,7 @@ void render()
 
     g_state.player->render(&g_program);
 
-    for (int i = 0; i < PLATFORM_COUNT; i++) g_state.platforms[i].render(&g_program);
+    for (int i = 0; i < SMITH_COUNT; i++) g_state.smiths[i].render(&g_program);
 
     SDL_GL_SwapWindow(g_display_window);
 }
@@ -315,7 +315,7 @@ void shutdown()
 {
     SDL_Quit();
 
-    delete[] g_state.platforms;
+    delete[] g_state.smiths;
     delete g_state.player;
 }
 
