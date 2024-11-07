@@ -166,9 +166,9 @@ void initialise()
     g_state.smiths[0].set_position(glm::vec3(5.0f, 0.0f, 0.0f));
     g_state.smiths[0].set_ai_type(STRAIGHT_WALKER);
     g_state.smiths[1].set_position(glm::vec3(-5.0f, 0.0f, 0.0f));
-    g_state.smiths[0].set_ai_type(GUARD);
+    g_state.smiths[1].set_ai_type(GUARD);
     g_state.smiths[2].set_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    g_state.smiths[0].set_ai_type(CIRCLE_WALKER);
+    g_state.smiths[2].set_ai_type(CIRCLE_WALKER);
 
     // Set the type of every SMITH entity to SMITH
     for (int i = 0; i < SMITH_COUNT; i++)
@@ -178,6 +178,7 @@ void initialise()
         g_state.smiths[i].set_width(0.8f);
         g_state.smiths[i].set_height(1.0f);
         g_state.smiths[i].set_entity_type(SMITH);
+        g_state.smiths[i].set_speed(2.0f);
         g_state.smiths[i].update(0.0f, NULL, NULL, 0);
     }
 
@@ -312,6 +313,9 @@ void update()
     while (delta_time >= FIXED_TIMESTEP)
     {
         g_state.player->update(FIXED_TIMESTEP, NULL, g_state.smiths, SMITH_COUNT);
+        for (int i = 0; i < SMITH_COUNT; i++) {
+            g_state.smiths[i].update(FIXED_TIMESTEP, g_state.player, NULL, 0);
+        }
         delta_time -= FIXED_TIMESTEP;
     }
 

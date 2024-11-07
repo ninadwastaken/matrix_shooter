@@ -253,10 +253,12 @@ void Entity::update(float delta_time, Entity* player, Entity* collidable_entitie
             }
         }
     }
+    if (m_entity_type == SMITH) {
+        ai_activate(player);
+    }
 
     m_velocity.x = m_movement.x * m_speed;
     m_velocity.y = m_movement.y * m_speed;
-    //m_velocity += m_acceleration * delta_time;
 
     m_position.y += m_velocity.y * delta_time;
     check_collision_y(collidable_entities, collidable_entity_count);
