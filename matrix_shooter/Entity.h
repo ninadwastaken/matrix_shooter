@@ -76,9 +76,9 @@ public:
     void update(float delta_time, Entity* player, Entity* collidable_entities, int collidable_entity_count);
     void render(ShaderProgram* program);
 
-    void ai_activate(Entity* player);
+    void ai_activate(Entity* player, float delta_time);
     void ai_straight_walk();
-    void ai_circle_walk();
+    void ai_circle_walk(float delta_time);
     void ai_guard(Entity* player);
 
     void normalise_movement() { m_movement = glm::normalize(m_movement); }

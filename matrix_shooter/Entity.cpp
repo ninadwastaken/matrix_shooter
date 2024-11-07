@@ -13,7 +13,9 @@
 #include "ShaderProgram.h"
 #include "Entity.h"
 
-void Entity::ai_activate(Entity* player)
+float degrees = 0.0f;
+
+void Entity::ai_activate(Entity* player, float delta_time)
 {
     switch (m_ai_type)
     {
@@ -26,7 +28,7 @@ void Entity::ai_activate(Entity* player)
         break;
 
     case CIRCLE_WALKER:
-        ai_circle_walk();
+        ai_circle_walk(delta_time);
         break;
 
     default:
@@ -39,33 +41,30 @@ void Entity::ai_straight_walk()
     m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
 }
 
-void Entity::ai_circle_walk()
+void Entity::ai_circle_walk(float delta_time)
 {
-    m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
+    degrees += delta_time;
+    m_movement = glm::vec3(std::sin(degrees), std::cos(degrees), 0.0f);
 }
 
 void Entity::ai_guard(Entity* player)
 {
-    /*switch (m_ai_state) {
-    case IDLE:
-        if (glm::distance(m_position, player->get_position()) < 3.0f) m_ai_state = WALKING;
-        break;
+    // TODO! figure out issue with nullptr
+    if (player == nullptr) return;
+    if (m_position.x > player->get_position().x) {
+        m_movement.x = 1.0f;
+    }
+    else {
+        m_movement.x = -1.0f;
 
-    case WALKING:
-        if (m_position.x > player->get_position().x) {
-            m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
-        }
-        else {
-            m_movement = glm::vec3(1.0f, 0.0f, 0.0f);
-        }
-        break;
+    }
+    if (m_position.y > player->get_position().y) {
+        m_movement.y = 1.0f;
+    }
+    else {
+        m_movement.y = -1.0f;
 
-    case ATTACKING:
-        break;
-
-    default:
-        break;
-    }*/
+    }
 }
 // Default constructor
 Entity::Entity()
@@ -181,7 +180,7 @@ void const Entity::check_collision_y(Entity* collidable_entities, int collidable
                 // Collision!
                 m_collided_top = true;
             }
-            else if (m_velocity.y < 0)
+            else if (m_velocity.y <= 0)
             {
                 m_position.y += y_overlap;
                 m_velocity.y = 0;
@@ -212,7 +211,7 @@ void const Entity::check_collision_x(Entity* collidable_entities, int collidable
                 m_collided_right = true;
 
             }
-            else if (m_velocity.x < 0)
+            else if (m_velocity.x <= 0)
             {
                 m_position.x += x_overlap;
                 m_velocity.x = 0;
@@ -232,7 +231,6 @@ void Entity::update(float delta_time, Entity* player, Entity* collidable_entitie
     m_collided_left = false;
     m_collided_right = false;
 
-    if (m_entity_type == ENEMY) ai_activate(player);
 
     if (m_animation_indices != NULL)
     {
@@ -254,7 +252,7 @@ void Entity::update(float delta_time, Entity* player, Entity* collidable_entitie
         }
     }
     if (m_entity_type == SMITH) {
-        ai_activate(player);
+        ai_activate(player, delta_time);
     }
 
     m_velocity.x = m_movement.x * m_speed;
@@ -265,6 +263,22 @@ void Entity::update(float delta_time, Entity* player, Entity* collidable_entitie
 
     m_position.x += m_velocity.x * delta_time;
     check_collision_x(collidable_entities, collidable_entity_count);
+
+    float horizontal_boundary = 5.4f;
+    if (m_position.x > horizontal_boundary) {
+        m_position.x = -horizontal_boundary;
+    }
+    if (m_position.x < -horizontal_boundary) {
+        m_position.x = horizontal_boundary;
+    }
+
+    float vertical_boundary = 4.0f;
+    if (m_position.y > vertical_boundary) {
+        m_position.y = -vertical_boundary;
+    }
+    if (m_position.y < -vertical_boundary) {
+        m_position.y = vertical_boundary;
+    }
 
     if (m_is_jumping)
     {
