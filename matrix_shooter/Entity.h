@@ -4,7 +4,7 @@
 #include "glm/glm.hpp"
 #include "ShaderProgram.h"
 enum EntityType { SMITH, PLAYER, ENEMY };
-enum AIType { WALKER, GUARD };
+enum AIType { STRAIGHT_WALKER, GUARD, CIRCLE_WALKER };
 enum AIState { WALKING, IDLE, ATTACKING };
 
 
@@ -77,7 +77,8 @@ public:
     void render(ShaderProgram* program);
 
     void ai_activate(Entity* player);
-    void ai_walk();
+    void ai_straight_walk();
+    void ai_circle_walk();
     void ai_guard(Entity* player);
 
     void normalise_movement() { m_movement = glm::normalize(m_movement); }

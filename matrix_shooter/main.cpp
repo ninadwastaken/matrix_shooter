@@ -163,16 +163,25 @@ void initialise()
 
     g_state.smiths = new Entity[SMITH_COUNT];
 
+    g_state.smiths[0].set_position(glm::vec3(5.0f, 0.0f, 0.0f));
+    g_state.smiths[0].set_ai_type(STRAIGHT_WALKER);
+    g_state.smiths[1].set_position(glm::vec3(-5.0f, 0.0f, 0.0f));
+    g_state.smiths[0].set_ai_type(GUARD);
+    g_state.smiths[2].set_position(glm::vec3(0.0f, 0.0f, 0.0f));
+    g_state.smiths[0].set_ai_type(CIRCLE_WALKER);
+
     // Set the type of every SMITH entity to SMITH
     for (int i = 0; i < SMITH_COUNT; i++)
     {
         g_state.smiths[i].set_texture_id(smith_texture_id);
-        g_state.smiths[i].set_position(glm::vec3(i - SMITH_COUNT / 2.0f, -3.0f, 0.0f));
+        //g_state.smiths[i].set_position(glm::vec3(i - SMITH_COUNT / 2.0f, -3.0f, 0.0f));
         g_state.smiths[i].set_width(0.8f);
         g_state.smiths[i].set_height(1.0f);
         g_state.smiths[i].set_entity_type(SMITH);
         g_state.smiths[i].update(0.0f, NULL, NULL, 0);
     }
+
+    
 
 
     // ––––– PLAYER (GEORGE) ––––– //
@@ -186,7 +195,7 @@ void initialise()
         { 0, 4, 8, 12 }   // for George to move downwards
     };
 
-    glm::vec3 acceleration = glm::vec3(0.0f, -4.905f, 0.0f);
+    glm::vec3 acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
 
     g_state.player = new Entity(
         player_texture_id,         // texture id
@@ -269,6 +278,15 @@ void process_input()
     else if (key_state[SDL_SCANCODE_RIGHT])
     {
         g_state.player->move_right();
+    }
+
+    if (key_state[SDL_SCANCODE_UP])
+    {
+        g_state.player->move_up();
+    }
+    else if (key_state[SDL_SCANCODE_DOWN])
+    {
+        g_state.player->move_down();
     }
 
     if (glm::length(g_state.player->get_movement()) > 1.0f)
