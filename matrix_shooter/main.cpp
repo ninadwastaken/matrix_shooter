@@ -59,8 +59,9 @@ F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
 
 constexpr float MILLISECONDS_IN_SECOND = 1000.0;
 
-constexpr char SPRITESHEET_FILEPATH[] = "assets/images/george_0.png",
-MAP_TILESET_FILEPATH[] = "assets/images/tileset.png",
+constexpr char SPRITESHEET_FILEPATH[] = "assets/neo.png",
+ENEMY_FILEPATH[] = "assets/smith.png",
+MAP_TILESET_FILEPATH[] = "assets/Textures-16.png",
 BGM_FILEPATH[] = "assets/audio/dooblydoo.mp3",
 JUMP_SFX_FILEPATH[] = "assets/audio/bounce.wav";
 
@@ -160,11 +161,12 @@ void initialise()
 
     // ————— MAP SET-UP ————— //
     GLuint map_texture_id = load_texture(MAP_TILESET_FILEPATH);
-    g_game_state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, LEVEL_1_DATA, map_texture_id, 1.0f, 4, 1);
+    g_game_state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, LEVEL_1_DATA, map_texture_id, 1.0f, 30, 32);
 
     // ————— GEORGE SET-UP ————— //
 
     GLuint player_texture_id = load_texture(SPRITESHEET_FILEPATH);
+    GLuint enemy_texture_id = load_texture(ENEMY_FILEPATH);
 
     int player_walking_animation[4][4] =
     {
@@ -183,14 +185,49 @@ void initialise()
         3.0f,                      // jumping power
         player_walking_animation,  // animation index sets
         0.0f,                      // animation time
-        4,                         // animation frame amount
+        1,                         // animation frame amount
         0,                         // current animation index
-        4,                         // animation column amount
-        4,                         // animation row amount
+        1,                         // animation column amount
+        1,                         // animation row amount
         0.9f,                      // width
         0.9f,                       // height
         PLAYER
     );
+
+    g_game_state.enemies = new Entity[3];
+
+    /*for (int i = 0; i < 3; i++) {
+        g_game_state.enemies[i].set_texture_id(enemy_texture_id);
+        g_game_state.enemies[i].set_width(0.9f);
+        g_game_state.enemies[i].set_height(0.9f);
+        g_game_state.enemies[i].set_texture_id(enemy_texture_id);
+    }*/
+    for (int i = 0; i < 3; i++) {
+        g_game_state.enemies[i] = Entity(
+            enemy_texture_id,         // texture id
+            5.0f,                      // speed
+            acceleration,              // acceleration
+            3.0f,                      // jumping power
+            player_walking_animation,  // animation index sets
+            0.0f,                      // animation time
+            1,                         // animation frame amount
+            0,                         // current animation index
+            1,                         // animation column amount
+            1,                         // animation row amount
+            0.9f,                      // width
+            0.9f,                       // height
+            ENEMY
+        );
+    }
+
+    g_game_state.enemies[0].set_position(glm::vec3(0.1f, 0.1f, 0.0f));
+    g_game_state.enemies[0].set_ai_type(WALKER);
+    g_game_state.enemies[1].set_ai_type(TOANDFROER);
+    g_game_state.enemies[2].set_ai_type(JUMPER);
+
+    for (int i = 0; i < 3; i++) {
+        g_game_state.enemies[i].update(0.0f, NULL, NULL, 0, g_game_state.map);
+    }
 
 
     // Jumping
@@ -249,7 +286,10 @@ void process_input()
 
     const Uint8* key_state = SDL_GetKeyboardState(NULL);
 
-    if (key_state[SDL_SCANCODE_LEFT])       g_game_state.player->move_left();
+    if (key_state[SDL_SCANCODE_LEFT]) {
+        g_game_state.player->move_left();
+
+    }
     else if (key_state[SDL_SCANCODE_RIGHT]) g_game_state.player->move_right();
 
     if (glm::length(g_game_state.player->get_movement()) > 1.0f)
@@ -274,6 +314,11 @@ void update()
     {
         g_game_state.player->update(FIXED_TIMESTEP, g_game_state.player, NULL, 0,
             g_game_state.map);
+
+        for (int i = 0; i < 3; i++) {
+            g_game_state.enemies[i].update(FIXED_TIMESTEP, g_game_state.player,
+                NULL, 0, g_game_state.map);
+        }
         delta_time -= FIXED_TIMESTEP;
     }
 
@@ -292,6 +337,9 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
 
     g_game_state.player->render(&g_shader_program);
+    for (int i = 0; i < 3; i++) {
+        g_game_state.enemies[i].render(&g_shader_program);
+    }
     g_game_state.map->render(&g_shader_program);
 
     SDL_GL_SwapWindow(g_display_window);
