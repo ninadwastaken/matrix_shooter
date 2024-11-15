@@ -314,7 +314,7 @@ void update()
 
     while (delta_time >= FIXED_TIMESTEP)
     {
-        g_game_state.player->update(FIXED_TIMESTEP, g_game_state.player, NULL, 0,
+        g_game_state.player->update(FIXED_TIMESTEP, g_game_state.player, g_game_state.enemies, 3,
             g_game_state.map);
 
         for (int i = 0; i < 3; i++) {

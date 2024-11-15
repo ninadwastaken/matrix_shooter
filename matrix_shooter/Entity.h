@@ -115,6 +115,7 @@ public:
     bool      const get_collided_bottom() const { return m_collided_bottom; }
     bool      const get_collided_right() const { return m_collided_right; }
     bool      const get_collided_left() const { return m_collided_left; }
+    bool      const get_is_active() const { return m_is_active; }
     
     void activate()   { m_is_active = true;  };
     void deactivate() { m_is_active = false; };

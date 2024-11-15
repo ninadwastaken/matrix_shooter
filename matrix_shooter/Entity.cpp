@@ -160,9 +160,12 @@ void const Entity::check_collision_y(Entity *collidable_entities, int collidable
     for (int i = 0; i < collidable_entity_count; i++)
     {
         Entity *collidable_entity = &collidable_entities[i];
+        if (!collidable_entity->get_is_active()) continue;
         
         if (check_collision(collidable_entity))
         {
+            collidable_entity->deactivate();
+            continue;
             float y_distance = fabs(m_position.y - collidable_entity->m_position.y);
             float y_overlap = fabs(y_distance - (m_height / 2.0f) - (collidable_entity->m_height / 2.0f));
             if (m_velocity.y > 0)
@@ -189,9 +192,13 @@ void const Entity::check_collision_x(Entity *collidable_entities, int collidable
     for (int i = 0; i < collidable_entity_count; i++)
     {
         Entity *collidable_entity = &collidable_entities[i];
+        if (!collidable_entity->get_is_active()) continue;
         
         if (check_collision(collidable_entity))
         {
+            collidable_entity->deactivate();
+            continue;
+
             float x_distance = fabs(m_position.x - collidable_entity->m_position.x);
             float x_overlap = fabs(x_distance - (m_width / 2.0f) - (collidable_entity->m_width / 2.0f));
             if (m_velocity.x > 0)
@@ -351,6 +358,7 @@ void Entity::update(float delta_time, Entity *player, Entity *collidable_entitie
 
 void Entity::render(ShaderProgram* program)
 {
+    if (!m_is_active) return;
     program->set_model_matrix(m_model_matrix);
 
     if (m_animation_indices != NULL)
