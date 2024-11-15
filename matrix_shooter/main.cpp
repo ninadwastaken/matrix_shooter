@@ -39,8 +39,8 @@ struct GameState
 enum AppStatus { RUNNING, TERMINATED };
 
 // ————— CONSTANTS ————— //
-constexpr int WINDOW_WIDTH = 640 * 2,
-WINDOW_HEIGHT = 480 * 2;
+constexpr int WINDOW_WIDTH = 640 * 1.5,
+WINDOW_HEIGHT = 480 * 1.5;
 
 constexpr float BG_RED = 0.1922f,
 BG_BLUE = 0.549f,
@@ -220,7 +220,7 @@ void initialise()
         );
     }
 
-    g_game_state.enemies[0].set_position(glm::vec3(0.1f, 0.1f, 0.0f));
+    g_game_state.enemies[0].set_position(glm::vec3(1.0f, 0.1f, 0.0f));
     g_game_state.enemies[0].set_ai_type(WALKER);
     g_game_state.enemies[1].set_ai_type(TOANDFROER);
     g_game_state.enemies[2].set_ai_type(JUMPER);

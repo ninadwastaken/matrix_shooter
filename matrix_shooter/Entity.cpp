@@ -18,7 +18,7 @@ void Entity::ai_activate(Entity *player)
     switch (m_ai_type)
     {
         case WALKER:
-            ai_walk();
+            //ai_walk();
             break;
             
         case GUARD:
@@ -32,7 +32,7 @@ void Entity::ai_activate(Entity *player)
 
 void Entity::ai_walk()
 {
-    m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
+    m_movement = glm::vec3(1.0f, 0.0f, 0.0f);
 }
 
 void Entity::ai_guard(Entity *player)
