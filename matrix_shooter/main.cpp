@@ -52,7 +52,7 @@ VIEWPORT_Y = 0,
 VIEWPORT_WIDTH = WINDOW_WIDTH,
 VIEWPORT_HEIGHT = WINDOW_HEIGHT;
 
-constexpr char GAME_WINDOW_NAME[] = "Hello, Maps!";
+constexpr char GAME_WINDOW_NAME[] = "matrix shooter";
 
 constexpr char V_SHADER_PATH[] = "shaders/vertex_textured.glsl",
 F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
@@ -222,7 +222,9 @@ void initialise()
 
     g_game_state.enemies[0].set_position(glm::vec3(1.0f, 0.1f, 0.0f));
     g_game_state.enemies[0].set_ai_type(WALKER);
+    g_game_state.enemies[1].set_position(glm::vec3(2.0f, 0.1f, 0.0f));
     g_game_state.enemies[1].set_ai_type(TOANDFROER);
+    g_game_state.enemies[2].set_position(glm::vec3(3.0f, 0.1f, 0.0f));
     g_game_state.enemies[2].set_ai_type(JUMPER);
 
     for (int i = 0; i < 3; i++) {
