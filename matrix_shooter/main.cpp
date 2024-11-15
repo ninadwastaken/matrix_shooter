@@ -42,6 +42,9 @@ enum AppStatus { RUNNING, TERMINATED, WON, LOST };
 constexpr int WINDOW_WIDTH = 640 * 1.5,
 WINDOW_HEIGHT = 480 * 1.5;
 
+std::string text_to_display = "";
+
+
 constexpr float BG_RED = 0.1922f,
 BG_BLUE = 0.549f,
 BG_GREEN = 0.9059f,
@@ -69,6 +72,8 @@ JUMP_SFX_FILEPATH[] = "assets/audio/bounce.wav";
 constexpr int NUMBER_OF_TEXTURES = 1;
 constexpr GLint LEVEL_OF_DETAIL = 0;
 constexpr GLint TEXTURE_BORDER = 0;
+
+float g_time_left = 2.0f;
 
 unsigned int LEVEL_1_DATA[] =
 {
@@ -375,6 +380,10 @@ void update()
     float ticks = (float)SDL_GetTicks() / MILLISECONDS_IN_SECOND;
     float delta_time = ticks - g_previous_ticks;
     g_previous_ticks = ticks;
+    g_time_left -= delta_time;
+    if (g_time_left <= 0.0f && g_app_status == RUNNING){
+        g_app_status = LOST;
+    } 
 
     delta_time += g_accumulator;
 
@@ -416,9 +425,18 @@ void render()
     }
     g_game_state.map->render(&g_shader_program);
 
-    draw_text(&g_shader_program, g_font_texture_id, "time left: " + std::to_string(20 - (int)(SDL_GetTicks() / MILLISECONDS_IN_SECOND)), 0.5f, 0.05f,
-        glm::vec3(0.5f, 2.0f, 0.0f));
+    if (g_app_status == RUNNING) {
+        text_to_display = "time left: " + std::to_string((int)g_time_left);
+    }
+    else if (g_app_status == WON) {
+        text_to_display = "you win";
+    }
+    else if (g_app_status == LOST) {
+        text_to_display = "next time big bro";
+    }
 
+    draw_text(&g_shader_program, g_font_texture_id, text_to_display, 0.5f, 0.05f,
+        glm::vec3(0.5f, 2.0f, 0.0f));
     SDL_GL_SwapWindow(g_display_window);
 }
 
@@ -438,7 +456,7 @@ int main(int argc, char* argv[])
 {
     initialise();
 
-    while (g_app_status == RUNNING)
+    while (g_app_status != TERMINATED)
     {
         process_input();
         update();
