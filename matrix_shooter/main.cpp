@@ -36,10 +36,10 @@ struct GameState
     Mix_Chunk* jump_sfx;
 };
 
-enum AppStatus { RUNNING, TERMINATED };
+enum AppStatus { RUNNING, TERMINATED, WON, LOST };
 
 // ————— CONSTANTS ————— //
-constexpr int WINDOW_WIDTH = 640 * 1.5,
+constexpr int WINDOW_WIDTH = 640 * 1.6,
 WINDOW_HEIGHT = 480 * 1.5;
 
 constexpr float BG_RED = 0.1922f,
@@ -60,6 +60,7 @@ F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
 constexpr float MILLISECONDS_IN_SECOND = 1000.0;
 
 constexpr char SPRITESHEET_FILEPATH[] = "assets/neo.png",
+FONT_FILEPATH[] = "assets/font1.png",
 ENEMY_FILEPATH[] = "assets/smith.png",
 MAP_TILESET_FILEPATH[] = "assets/Textures-16.png",
 BGM_FILEPATH[] = "assets/audio/dooblydoo.mp3",
@@ -97,6 +98,74 @@ void render();
 void shutdown();
 
 // ————— GENERAL FUNCTIONS ————— //
+
+constexpr int FONTBANK_SIZE = 16;
+
+void draw_text(ShaderProgram* program, GLuint font_texture_id, std::string text,
+    float font_size, float spacing, glm::vec3 position)
+{
+    // Scale the size of the fontbank in the UV-plane
+    // We will use this for spacing and positioning
+    float width = 1.0f / FONTBANK_SIZE;
+    float height = 1.0f / FONTBANK_SIZE;
+
+    // Instead of having a single pair of arrays, we'll have a series of pairs—one for
+    // each character. Don't forget to include <vector>!
+    std::vector<float> vertices;
+    std::vector<float> texture_coordinates;
+
+    // For every character...
+    for (int i = 0; i < text.size(); i++) {
+        // 1. Get their index in the spritesheet, as well as their offset (i.e. their
+        //    position relative to the whole sentence)
+        int spritesheet_index = (int)text[i];  // ascii value of character
+        float offset = (font_size + spacing) * i;
+
+        // 2. Using the spritesheet index, we can calculate our U- and V-coordinates
+        float u_coordinate = (float)(spritesheet_index % FONTBANK_SIZE) / FONTBANK_SIZE;
+        float v_coordinate = (float)(spritesheet_index / FONTBANK_SIZE) / FONTBANK_SIZE;
+
+        // 3. Inset the current pair in both vectors
+        vertices.insert(vertices.end(), {
+            offset + (-0.5f * font_size), 0.5f * font_size,
+            offset + (-0.5f * font_size), -0.5f * font_size,
+            offset + (0.5f * font_size), 0.5f * font_size,
+            offset + (0.5f * font_size), -0.5f * font_size,
+            offset + (0.5f * font_size), 0.5f * font_size,
+            offset + (-0.5f * font_size), -0.5f * font_size,
+            });
+
+        texture_coordinates.insert(texture_coordinates.end(), {
+            u_coordinate, v_coordinate,
+            u_coordinate, v_coordinate + height,
+            u_coordinate + width, v_coordinate,
+            u_coordinate + width, v_coordinate + height,
+            u_coordinate + width, v_coordinate,
+            u_coordinate, v_coordinate + height,
+            });
+    }
+
+    // 4. And render all of them using the pairs
+    glm::mat4 model_matrix = glm::mat4(1.0f);
+    model_matrix = glm::translate(model_matrix, position);
+
+    program->set_model_matrix(model_matrix);
+    glUseProgram(program->get_program_id());
+
+    glVertexAttribPointer(program->get_position_attribute(), 2, GL_FLOAT, false, 0,
+        vertices.data());
+    glEnableVertexAttribArray(program->get_position_attribute());
+    glVertexAttribPointer(program->get_tex_coordinate_attribute(), 2, GL_FLOAT, false, 0,
+        texture_coordinates.data());
+    glEnableVertexAttribArray(program->get_tex_coordinate_attribute());
+
+    glBindTexture(GL_TEXTURE_2D, font_texture_id);
+    glDrawArrays(GL_TRIANGLES, 0, (int)(text.size() * 6));
+
+    glDisableVertexAttribArray(program->get_position_attribute());
+    glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
+}
+
 GLuint load_texture(const char* filepath)
 {
     int width, height, number_of_components;
@@ -123,6 +192,7 @@ GLuint load_texture(const char* filepath)
     return texture_id;
 }
 
+GLuint g_font_texture_id = load_texture(FONT_FILEPATH);
 void initialise()
 {
     // ————— GENERAL ————— //
@@ -343,6 +413,9 @@ void render()
         g_game_state.enemies[i].render(&g_shader_program);
     }
     g_game_state.map->render(&g_shader_program);
+
+    draw_text(&g_shader_program, g_font_texture_id, "Hello, George!", 0.5f, 0.05f,
+        glm::vec3(-3.5f, 2.0f, 0.0f));
 
     SDL_GL_SwapWindow(g_display_window);
 }
