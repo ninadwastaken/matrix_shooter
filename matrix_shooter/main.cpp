@@ -259,7 +259,7 @@ void initialise()
         player_texture_id,         // texture id
         5.0f,                      // speed
         acceleration,              // acceleration
-        3.0f,                      // jumping power
+        0.1f,                      // jumping power
         player_walking_animation,  // animation index sets
         0.0f,                      // animation time
         1,                         // animation frame amount
@@ -284,7 +284,7 @@ void initialise()
             enemy_texture_id,         // texture id
             5.0f,                      // speed
             acceleration,              // acceleration
-            3.0f,                      // jumping power
+            0.6f,                      // jumping power
             player_walking_animation,  // animation index sets
             0.0f,                      // animation time
             1,                         // animation frame amount
@@ -415,6 +415,10 @@ void update()
         if (g_game_state.enemies[i].get_is_active()) {
             g_app_status = RUNNING;
         }
+    }
+
+    if (g_game_state.player->get_position().y < -6.0f && g_app_status == RUNNING){
+        g_app_status = LOST;
     }
 
     // Camera Follows the player

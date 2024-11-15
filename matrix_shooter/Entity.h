@@ -85,6 +85,8 @@ public:
     void ai_activate(Entity *player);
     void ai_walk();
     void ai_guard(Entity *player);
+    void ai_jump();
+
     
     void normalise_movement() { m_movement = glm::normalize(m_movement); }
 

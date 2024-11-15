@@ -29,6 +29,7 @@ void Entity::ai_activate(Entity *player)
             break;
 
         case JUMPER:
+            ai_jump();
             break;
             
         default:
@@ -39,6 +40,11 @@ void Entity::ai_activate(Entity *player)
 void Entity::ai_walk()
 {
     m_movement = glm::vec3(1.0f, 0.0f, 0.0f);
+}
+
+void Entity::ai_jump()
+{
+    //jump();
 }
 
 void Entity::ai_guard(Entity *player)
