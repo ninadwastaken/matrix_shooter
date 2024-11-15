@@ -39,7 +39,7 @@ struct GameState
 enum AppStatus { RUNNING, TERMINATED, WON, LOST };
 
 // ————— CONSTANTS ————— //
-constexpr int WINDOW_WIDTH = 640 * 1.6,
+constexpr int WINDOW_WIDTH = 640 * 1.5,
 WINDOW_HEIGHT = 480 * 1.5;
 
 constexpr float BG_RED = 0.1922f,
@@ -100,6 +100,7 @@ void shutdown();
 // ————— GENERAL FUNCTIONS ————— //
 
 constexpr int FONTBANK_SIZE = 16;
+GLuint g_font_texture_id;
 
 void draw_text(ShaderProgram* program, GLuint font_texture_id, std::string text,
     float font_size, float spacing, glm::vec3 position)
@@ -192,7 +193,6 @@ GLuint load_texture(const char* filepath)
     return texture_id;
 }
 
-GLuint g_font_texture_id = load_texture(FONT_FILEPATH);
 void initialise()
 {
     // ————— GENERAL ————— //
@@ -237,6 +237,8 @@ void initialise()
 
     GLuint player_texture_id = load_texture(SPRITESHEET_FILEPATH);
     GLuint enemy_texture_id = load_texture(ENEMY_FILEPATH);
+    g_font_texture_id = load_texture(FONT_FILEPATH);
+
 
     int player_walking_animation[4][4] =
     {
@@ -414,8 +416,8 @@ void render()
     }
     g_game_state.map->render(&g_shader_program);
 
-    draw_text(&g_shader_program, g_font_texture_id, "Hello, George!", 0.5f, 0.05f,
-        glm::vec3(-3.5f, 2.0f, 0.0f));
+    draw_text(&g_shader_program, g_font_texture_id, "time left: " + std::to_string(20 - (int)(SDL_GetTicks() / MILLISECONDS_IN_SECOND)), 0.5f, 0.05f,
+        glm::vec3(0.5f, 2.0f, 0.0f));
 
     SDL_GL_SwapWindow(g_display_window);
 }
