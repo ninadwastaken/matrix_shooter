@@ -24,6 +24,12 @@ void Entity::ai_activate(Entity *player)
         case GUARD:
             ai_guard(player);
             break;
+
+        case TOANDFROER:
+            break;
+
+        case JUMPER:
+            break;
             
         default:
             break;
