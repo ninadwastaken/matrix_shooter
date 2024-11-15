@@ -73,7 +73,7 @@ constexpr int NUMBER_OF_TEXTURES = 1;
 constexpr GLint LEVEL_OF_DETAIL = 0;
 constexpr GLint TEXTURE_BORDER = 0;
 
-float g_time_left = 2.0f;
+float g_time_left = 20.0f;
 
 unsigned int LEVEL_1_DATA[] =
 {
@@ -408,6 +408,14 @@ void update()
     g_accumulator = delta_time;
 
     g_view_matrix = glm::mat4(1.0f);
+
+    g_app_status = WON;
+
+    for (int i = 0; i < 3; i++) {
+        if (g_game_state.enemies[i].get_is_active()) {
+            g_app_status = RUNNING;
+        }
+    }
 
     // Camera Follows the player
     g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-g_game_state.player->get_position().x, 0.0f, 0.0f));
