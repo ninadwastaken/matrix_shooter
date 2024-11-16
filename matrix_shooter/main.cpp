@@ -73,7 +73,8 @@ constexpr int NUMBER_OF_TEXTURES = 1;
 constexpr GLint LEVEL_OF_DETAIL = 0;
 constexpr GLint TEXTURE_BORDER = 0;
 
-float g_time_left = 20.0f;
+float g_time_left = 15.0f;
+int g_enemies_left = 3;
 
 unsigned int LEVEL_1_DATA[] =
 {
@@ -82,11 +83,11 @@ unsigned int LEVEL_1_DATA[] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,*/
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 1, 2, 2, 2, 2, 2, 0, 0, 0, 3,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 0, 0, 3
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 1, 2, 2, 2, 2, 2, 0, 0, 0, 3,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 4, 1, 1, 1, 2, 2, 3, 0, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 0, 0, 3
 };
 
 // ————— VARIABLES ————— //
@@ -265,14 +266,14 @@ void initialise()
         player_texture_id,         // texture id
         5.0f,                      // speed
         acceleration,              // acceleration
-        0.1f,                      // jumping power
+        0.0f,                      // jumping power
         player_walking_animation,  // animation index sets
         0.0f,                      // animation time
         1,                         // animation frame amount
         0,                         // current animation index
         1,                         // animation column amount
         1,                         // animation row amount
-        0.9f,                      // width
+        0.6f,                      // width
         0.9f,                       // height
         PLAYER
     );
@@ -305,9 +306,9 @@ void initialise()
 
     g_game_state.enemies[0].set_position(glm::vec3(1.0f, 0.1f, 0.0f));
     g_game_state.enemies[0].set_ai_type(WALKER);
-    g_game_state.enemies[1].set_position(glm::vec3(2.0f, 0.1f, 0.0f));
+    g_game_state.enemies[1].set_position(glm::vec3(16.0f, -3.0f, 0.0f));
     g_game_state.enemies[1].set_ai_type(TOANDFROER);
-    g_game_state.enemies[2].set_position(glm::vec3(27.0f, 2.1f, 0.0f));
+    g_game_state.enemies[2].set_position(glm::vec3(37.0f, 2.1f, 0.0f));
     g_game_state.enemies[2].set_ai_type(JUMPER);
 
     for (int i = 0; i < 3; i++) {
@@ -316,7 +317,7 @@ void initialise()
 
 
     // Jumping
-    g_game_state.player->set_jumping_power(5.0f);
+    g_game_state.player->set_jumping_power(4.0f);
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 
@@ -407,7 +408,7 @@ void update()
 
     while (delta_time >= FIXED_TIMESTEP)
     {
-        g_game_state.player->update(FIXED_TIMESTEP, g_game_state.player, g_game_state.enemies, 3,
+        g_game_state.player->update(FIXED_TIMESTEP, nullptr, g_game_state.enemies, 3,
             g_game_state.map);
 
         for (int i = 0; i < 3; i++) {
@@ -422,10 +423,12 @@ void update()
     g_view_matrix = glm::mat4(1.0f);
 
     g_app_status = WON;
+    g_enemies_left = 0;
 
     for (int i = 0; i < 3; i++) {
         if (g_game_state.enemies[i].get_is_active()) {
             g_app_status = RUNNING;
+            g_enemies_left++;
         }
     }
 
@@ -470,6 +473,11 @@ void render()
 
     draw_text(&g_shader_program, g_font_texture_id, text_to_display, 0.5f, 0.05f,
         glm::vec3(g_game_state.player->get_position().x - 3.5f, 2.5f, 0.0f));
+
+    if (text_to_display != "" && g_app_status == RUNNING) {
+        draw_text(&g_shader_program, g_font_texture_id, "enemies left: " + std::to_string((int)g_enemies_left), 0.3f, 0.02f,
+            glm::vec3(g_game_state.player->get_position().x - 3.5f, 2.8f, 0.0f));
+    }
     SDL_GL_SwapWindow(g_display_window);
 }
 

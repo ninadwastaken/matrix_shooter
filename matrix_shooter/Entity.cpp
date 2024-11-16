@@ -18,19 +18,31 @@ void Entity::ai_activate(Entity *player)
     switch (m_ai_type)
     {
         case WALKER:
-            //ai_walk();
+            //if (m_velocity.x == 0.0f) m_velocity.x = 4.0f;
+            //if (m_position.x < 5.0f) m_velocity.x = 4.0f;
+            //else if (m_position.x > 13.0f) m_velocity.x = -8.0f;
+            m_velocity.x = 0.5f;
+
             break;
             
         case GUARD:
-            ai_guard(player);
             break;
 
         case TOANDFROER:
+
+            if (m_position.x < 17.0f) {
+                m_velocity.x = 4.0f;
+            }
+            else if (m_position.x > 21.0f) {
+                m_velocity.x = -4.0f;
+            }
+            //m_velocity.x = -0.5f;
+            //ai_guard(player);
             break;
 
         case JUMPER:
             //if (get_collided_bottom()) {
-                ai_jump();
+            ai_jump();
             //}
             break;
             
@@ -53,7 +65,7 @@ void Entity::ai_jump()
 
 void Entity::ai_guard(Entity *player)
 {
-    switch (m_ai_state) {
+    /*switch (m_ai_state) {
         case IDLE:
             if (glm::distance(m_position, player->get_position()) < 3.0f) m_ai_state = WALKING;
             break;
@@ -71,6 +83,13 @@ void Entity::ai_guard(Entity *player)
             
         default:
             break;
+    }*/
+
+    if (player->get_position().x < m_position.x) {
+        m_velocity.x = 4.0f;
+    }
+    else {
+        m_velocity.x = -4.0f;
     }
 }
 // Default constructor
@@ -350,9 +369,12 @@ void Entity::update(float delta_time, Entity *player, Entity *collidable_entitie
         }
     }
 
+    if (m_entity_type == PLAYER) {
+        m_velocity.x = m_movement.x * m_speed;
+
+    }
     if (m_entity_type == ENEMY) ai_activate(player);
-    
-    m_velocity.x = m_movement.x * m_speed;
+
     m_velocity += m_acceleration * delta_time;
     
     m_position.y += m_velocity.y * delta_time;
