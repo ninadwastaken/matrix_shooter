@@ -4,7 +4,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
 #define ENEMY_COUNT 1
-#define LEVEL1_WIDTH 28
+#define LEVEL1_WIDTH 38
 #define LEVEL1_HEIGHT 5
 
 #ifdef _WINDOWS
@@ -82,11 +82,11 @@ unsigned int LEVEL_1_DATA[] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,*/
-    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3,
-    0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
-    2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 1, 2, 2, 2, 2, 2, 0, 0, 0, 3,
-    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
-    2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 0, 0, 3
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 1, 2, 2, 2, 2, 2, 0, 0, 0, 3,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 0, 0, 3
 };
 
 // ————— VARIABLES ————— //
@@ -99,6 +99,7 @@ glm::mat4 g_view_matrix, g_projection_matrix;
 
 float g_previous_ticks = 0.0f,
 g_accumulator = 0.0f;
+bool started_game = false;
 
 
 void initialise();
@@ -385,7 +386,9 @@ void update()
     float ticks = (float)SDL_GetTicks() / MILLISECONDS_IN_SECOND;
     float delta_time = ticks - g_previous_ticks;
     g_previous_ticks = ticks;
-    g_time_left -= delta_time;
+    if (started_game) {
+        g_time_left -= delta_time;
+    }
     if (g_time_left <= 0.0f && g_app_status == RUNNING){
         g_app_status = LOST;
     } 
@@ -396,6 +399,10 @@ void update()
     {
         g_accumulator = delta_time;
         return;
+    }
+
+    if (!started_game && g_game_state.player->get_position().x > 18.0f) {
+        started_game = true;
     }
 
     while (delta_time >= FIXED_TIMESTEP)
@@ -443,13 +450,22 @@ void render()
     g_game_state.map->render(&g_shader_program);
 
     if (g_app_status == RUNNING) {
-        text_to_display = "time left: " + std::to_string((int)g_time_left);
+        if (!started_game) {
+            text_to_display = "";
+            draw_text(&g_shader_program, g_font_texture_id, "kill this guy", 0.5f, 0.05f,
+                glm::vec3(0.0f, 2.5f, 0.0f));
+            draw_text(&g_shader_program, g_font_texture_id, "time left:   ", 0.5f, 0.05f,
+                glm::vec3(15.0f, 2.5f, 0.0f));
+        }
+        else {
+            text_to_display = "time left: " + std::to_string((int)g_time_left);
+        }
     }
     else if (g_app_status == WON) {
         text_to_display = "you win";
     }
     else if (g_app_status == LOST) {
-        text_to_display = "next time big bro";
+        text_to_display = "next time lol";
     }
 
     draw_text(&g_shader_program, g_font_texture_id, text_to_display, 0.5f, 0.05f,
