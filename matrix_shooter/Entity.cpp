@@ -29,7 +29,9 @@ void Entity::ai_activate(Entity *player)
             break;
 
         case JUMPER:
-            ai_jump();
+            //if (get_collided_bottom()) {
+                ai_jump();
+            //}
             break;
             
         default:
@@ -44,7 +46,9 @@ void Entity::ai_walk()
 
 void Entity::ai_jump()
 {
-    //jump();
+    if (m_position.y < 1.0f) {
+        m_velocity.y = 5.0f;
+    }
 }
 
 void Entity::ai_guard(Entity *player)
@@ -345,6 +349,8 @@ void Entity::update(float delta_time, Entity *player, Entity *collidable_entitie
             }
         }
     }
+
+    if (m_entity_type == ENEMY) ai_activate(player);
     
     m_velocity.x = m_movement.x * m_speed;
     m_velocity += m_acceleration * delta_time;

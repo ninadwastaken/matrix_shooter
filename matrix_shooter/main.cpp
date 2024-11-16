@@ -4,7 +4,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
 #define ENEMY_COUNT 1
-#define LEVEL1_WIDTH 14
+#define LEVEL1_WIDTH 28
 #define LEVEL1_HEIGHT 5
 
 #ifdef _WINDOWS
@@ -77,11 +77,16 @@ float g_time_left = 20.0f;
 
 unsigned int LEVEL_1_DATA[] =
 {
-    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-    1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2
+    /*0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,*/
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3,
+    0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
+    2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 1, 2, 2, 2, 2, 2, 0, 0, 0, 3,
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 3, 2, 0, 0, 0, 1, 0, 0, 0, 3,
+    2, 2, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 0, 0, 3
 };
 
 // ————— VARIABLES ————— //
@@ -284,7 +289,7 @@ void initialise()
             enemy_texture_id,         // texture id
             5.0f,                      // speed
             acceleration,              // acceleration
-            0.6f,                      // jumping power
+            0.5f,                      // jumping power
             player_walking_animation,  // animation index sets
             0.0f,                      // animation time
             1,                         // animation frame amount
@@ -301,7 +306,7 @@ void initialise()
     g_game_state.enemies[0].set_ai_type(WALKER);
     g_game_state.enemies[1].set_position(glm::vec3(2.0f, 0.1f, 0.0f));
     g_game_state.enemies[1].set_ai_type(TOANDFROER);
-    g_game_state.enemies[2].set_position(glm::vec3(3.0f, 0.1f, 0.0f));
+    g_game_state.enemies[2].set_position(glm::vec3(27.0f, 2.1f, 0.0f));
     g_game_state.enemies[2].set_ai_type(JUMPER);
 
     for (int i = 0; i < 3; i++) {
@@ -448,7 +453,7 @@ void render()
     }
 
     draw_text(&g_shader_program, g_font_texture_id, text_to_display, 0.5f, 0.05f,
-        glm::vec3(0.5f, 2.0f, 0.0f));
+        glm::vec3(g_game_state.player->get_position().x - 3.5f, 2.5f, 0.0f));
     SDL_GL_SwapWindow(g_display_window);
 }
 
